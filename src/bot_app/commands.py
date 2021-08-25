@@ -67,7 +67,7 @@ async def process_photo(message: types.Message, state: FSMContext):
     lastname = ''
     if message.from_user.last_name != None:
         lastname = message.from_user.last_name
-    path_jpg = 'media/'+ username +'-' + lastname + '-' + id_user + '_' + str(datetime.now().strftime('%d_%m_%y_%a_%H-%M-%S')) +'.jpg'
+    path_jpg = 'media/' + str(datetime.now().strftime('%y_%m_%d__%H-%M-%S')) + '-' + username +'-' + lastname + '-' + id_user + '_' + '.jpg'
     await photo.download(path_jpg)  
     db.update_subscription_photo(message.from_user.id, photo=path_jpg)  
     await message.reply(messages.UPLOAD_OK_MESSAGE, reply_markup=inline_photo_ok)

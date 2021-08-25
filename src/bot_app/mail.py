@@ -31,7 +31,7 @@ def get_new_email(servername='imap.yandex.ru'):
             email_to = str(email.header.make_header(email.header.decode_header(email_message['To'])))
             subject = str(email.header.make_header(email.header.decode_header(email_message['Subject'])))
 
-            if subject == 'SMS to E-Mail, Отправитель: BelVEB24.BY':                              #<--- replace the text
+            if subject == 'SMS to E-Mail, Отправитель: Reshenie':                              #<--- replace the text
                 # Body details
                 for part in email_message.walk():
                     if part.get_content_type() == "text/plain" or part.get_content_type() == "text/html":
@@ -49,9 +49,9 @@ def get_new_email(servername='imap.yandex.ru'):
                                 i = 0
                                 for word in words:
                                     i += 1
-                                    if word == 'Credit':                                          #<--- replace the text
+                                    if word == 'CREDIT':                                          #<--- replace the text
                                         money = words[i]
-                                        return money[1:]
+                                        return money[:]
                         except:
                             return money
                     else:

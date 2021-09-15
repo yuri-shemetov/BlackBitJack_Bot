@@ -116,7 +116,7 @@ async def process_message(message: types.Message, state: FSMContext):
             for all_text in i:
                 price = price + str(all_text)
         time_wait = 0
-        while time_wait != 120:  #<--- 5*120=600 seconds
+        while time_wait != 120:  #<--- 5*120=600 seconds or 10 minuts
             # check mail and get a new payment message
             money = get_new_email()
             #print(money)

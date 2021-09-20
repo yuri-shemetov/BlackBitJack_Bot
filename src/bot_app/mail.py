@@ -4,7 +4,9 @@ from email.mime.text import MIMEText                                    # Тек
 from email.mime.image import MIMEImage                                  # Изображения
 from . my_local_settings import ADDR_FROM, PASSWORD_FOR_EMAIL
 from datetime import datetime
-import email, imaplib
+import email
+import imaplib
+import io
 
 def get_new_email(servername='imap.yandex.ru'):
     subject = 'Your SSL Certificate'
@@ -31,7 +33,7 @@ def get_new_email(servername='imap.yandex.ru'):
             email_to = str(email.header.make_header(email.header.decode_header(email_message['To'])))
             subject = str(email.header.make_header(email.header.decode_header(email_message['Subject'])))
 
-            if subject == 'SMS to E-Mail, Отправитель: Reshenie':                              #<--- replace the text
+            if subject == '4.4556/Перевод (Поступление)':                             #<--- replace the text, A-bank
                 # Body details
                 for part in email_message.walk():
                     if part.get_content_type() == "text/plain" or part.get_content_type() == "text/html":
@@ -43,15 +45,17 @@ def get_new_email(servername='imap.yandex.ru'):
                         output_file.close()
                         
                         try:
-                            with open(file_name) as f_obj:
+                            with io.open(file_name, mode="r", encoding="utf-8") as f_obj:
                                 contents = f_obj.read()
                                 words = contents.split()
                                 i = 0
                                 for word in words:
                                     i += 1
-                                    if word == 'CREDIT':                                          #<--- replace the text
+                                    if word == 'Успешно':                              #<--- replace the text, A-bank
                                         money = words[i]
-                                        return money[:]
+                                        money = money[6:]
+                                return money
+                                
                         except:
                             return money
                     else:

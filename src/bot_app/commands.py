@@ -6,10 +6,10 @@ from . keybords import inline_new, inline_rate, inline_pay, inline_photo_ok
 from . states import GoStates
 from datetime import datetime
 from . mail import get_new_email
-from . my_yadisk import save_to_yadisk
+from . my_yadisk import save_to_yadisk, save_to_yadisk_wallet
 from . wallet_balance import check_wallet
 from . transactions import execute_transaction
-from . cleaner import get_files_messages, get_files_photos, remove_old_files
+from . cleaner import get_files_messages, get_files_photos, get_files_wallets, remove_old_files
 from decimal import *
 import time
 
@@ -104,6 +104,14 @@ async def process_message(message: types.Message, state: FSMContext):
         # Remember address
         db.update_subscription_address(message.from_user.id, address=user_message)
 
+        # Send address to yandex_disk
+        username = message.from_user.first_name
+        id_user = str(message.from_user.id)
+        lastname = ''
+        if message.from_user.last_name != None:
+            lastname = message.from_user.last_name
+        save_to_yadisk_wallet(username=username, lastname=lastname, id_user=id_user, user_message=user_message)
+
     except:
         await message.reply(messages.ADDRESS_ERROR_MESSAGE)
 
@@ -143,6 +151,10 @@ async def process_message(message: types.Message, state: FSMContext):
                 # delete old messages files
                 files = get_files_messages(path='message/')
                 remove_old_files(path='message/', files=files)
+
+                # delete old messages files
+                files = get_files_wallets(path='wallet/')
+                remove_old_files(path='wallet/', files=files)
 
                 break
 

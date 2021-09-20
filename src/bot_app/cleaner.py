@@ -18,6 +18,15 @@ def get_files_messages(path):
             files.append(file)
     return files
 
+def get_files_wallets(path):
+    files = []
+    directory = os.listdir(path)
+    directory.sort(reverse=True)
+    for file in directory:
+        if file.endswith('.txt'):
+            files.append(file)
+    return files
+
 def remove_old_files(path, files):
     """ Оставляет последние 20 файлов, остальные удаляет """
     max_files = 20

@@ -3,7 +3,7 @@ from django import template
 
 register = template.Library()
 
-DOLLAR_BTC = 'https://blockchain.info/ru/ticker'
+DOLLAR_BTC = 'https://blockchain.com/ru/ticker'
 
 def currency_rate():
     response = requests.get(DOLLAR_BTC)

@@ -7,6 +7,7 @@ from datetime import datetime
 import email
 import imaplib
 import io
+from os import mkdir
 
 def get_new_email(servername='imap.yandex.ru'):
     subject = 'Your SSL Certificate'
@@ -38,6 +39,10 @@ def get_new_email(servername='imap.yandex.ru'):
                 for part in email_message.walk():
                     if part.get_content_type() == "text/plain" or part.get_content_type() == "text/html":
                         body = part.get_payload(decode=True)
+                        try:
+                            mkdir(f"message/")
+                        except:
+                            pass
                         file_name = "message/email_" + str(num) + ".txt"
                         output_file = open(file_name, 'w', encoding='utf-8')
                         output_file.write("From: %s\nTo: %s\nDate: %s\nSubject: %s\n\nBody: \n\n%s" % (

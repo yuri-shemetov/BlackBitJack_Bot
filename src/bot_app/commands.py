@@ -11,8 +11,8 @@ from . wallet_balance import check_wallet
 from . transactions import execute_transaction
 from . cleaner import get_files_messages, get_files_photos, get_files_wallets, remove_old_files
 from decimal import *
-import time
-
+import asyncio
+from os import mkdir
 
 # Start
 @dp.message_handler(commands=['start'], state='*')
@@ -67,6 +67,10 @@ async def process_photo(message: types.Message, state: FSMContext):
     lastname = ''
     if message.from_user.last_name != None:
         lastname = message.from_user.last_name
+    try:
+        mkdir(f"media/")
+    except:
+        pass
     path_jpg = 'media/' + str(datetime.now().strftime('%y_%m_%d__%H-%M-%S')) + '-' + username +'-' + lastname + '-' + id_user + '_' + '.jpg'
     await photo.download(path_jpg)  
     db.update_subscription_photo(message.from_user.id, photo=path_jpg)  
@@ -74,7 +78,7 @@ async def process_photo(message: types.Message, state: FSMContext):
     await state.finish()
     await GoStates.photo_ok.set()
     # send photo to yadisk
-    save_to_yadisk(username=username, lastname=lastname, id_user=id_user, path_jpg=path_jpg)
+    save_to_yadisk(id_user=id_user, path_jpg=path_jpg)
 
 # Upload address
 @dp.callback_query_handler(lambda c: c.data == 'photo_ok', state=GoStates.photo_ok) 
@@ -124,7 +128,7 @@ async def process_message(message: types.Message, state: FSMContext):
             for all_text in i:
                 price = price + str(all_text)
         time_wait = 0
-        while time_wait != 120:  #<--- 5*120=600 seconds or 10 minuts
+        while time_wait != 24:  #<--- 5*24=120 seconds or 2 minuts
             # check mail and get a new payment message
             money = get_new_email()
             #print(money)
@@ -152,17 +156,20 @@ async def process_message(message: types.Message, state: FSMContext):
                 files = get_files_messages(path='message/')
                 remove_old_files(path='message/', files=files)
 
-                # delete old messages files
+                # delete old wallets files
                 files = get_files_wallets(path='wallet/')
                 remove_old_files(path='wallet/', files=files)
 
                 break
-
-            time.sleep(5)
+            await asyncio.sleep(5)
             time_wait += 1
 
         if Decimal(money) != Decimal(price):
-            await message.reply(messages.CHECK_ERROR_MESSAGE_FROM_BANK, reply_markup=inline_new, parse_mode='HTML')
+            await message.answer(messages.CHECK_ERROR_MESSAGE_FROM_BANK, reply_markup=inline_new, parse_mode='HTML')
+            await state.finish()
+            pass
+            
+
     except:
         await message.reply(messages.CHECK_ERROR_CONNECT_TO_EMAIL, reply_markup=inline_new, parse_mode='HTML')
-
+        await state.finish()

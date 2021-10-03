@@ -32,10 +32,10 @@ async def process_message(message: types.Message, state: FSMContext):
                 balance = get_balance_bitcoins()
 
                 BTC_BYN = currency_rate()
-                money = round((Decimal(user_message)-Decimal(FEES))/Decimal(BTC_BYN), 8)
+                money = round((Decimal(user_message)-Decimal(FEES))/Decimal(BTC_BYN), 5)
 
                 BTC_USD = currency_usd.currency_rate()
-                ONE_BIT = round(Decimal(3/BTC_USD), 8)
+                ONE_BIT = round(Decimal(3/BTC_USD), 5)
 
                 if Decimal(balance) >= Decimal(money + ONE_BIT):
 

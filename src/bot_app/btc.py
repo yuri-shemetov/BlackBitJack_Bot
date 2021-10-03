@@ -37,7 +37,7 @@ async def process_message(message: types.Message, state: FSMContext):
                 if (Decimal(user_message) + Decimal(ONE_BIT)) <= Decimal(balance):
 
                     BTC_BYN = currency_rate()
-                    money = round(Decimal(user_message)*Decimal(BTC_BYN) + Decimal(FEES), 2)
+                    money = round(Decimal(user_message)*Decimal(BTC_BYN) + Decimal(FEES) + Decimal(0.5), 0)
                     answer_for_user = \
                         f'Стоимость указанного Вами количества биткоинов составит ' + str(money) + f' BYN. Отправка транзакции осуществляется с ПРИОРИТЕТОМ. Продолжить?'
                     await bot.send_message(

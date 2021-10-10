@@ -6,7 +6,7 @@ import csv
 
 def save_to_yadisk(id_user, path_jpg):
     y = yadisk.YaDisk(yadisk_id, ya_secret, yadisk_token)
-    date = datetime.strftime(datetime.now(), "%d_%m_%y-%H-%M-%S")
+    date = datetime.strftime(datetime.now(), "%y_%m_%d__%H-%M-%S")
     mounth = datetime.strftime(datetime.now(), "%y_%m")
     order = datetime.strftime(datetime.now(), "%d/%m/%y-%H:%M:%S")
 
@@ -45,7 +45,7 @@ def save_to_yadisk(id_user, path_jpg):
 
 def save_to_yadisk_wallet(username, lastname, id_user, user_message):
     y = yadisk.YaDisk(yadisk_id, ya_secret, yadisk_token)
-    date = datetime.strftime(datetime.now(), "%d_%m_%y-%H-%M-%S")
+    date = datetime.strftime(datetime.now(), "%y_%m_%d__%H-%M-%S")
     mounth = datetime.strftime(datetime.now(), "%y_%m")
 
     try:

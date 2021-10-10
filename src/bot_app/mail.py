@@ -8,14 +8,18 @@ import email
 import imaplib
 import io
 from os import mkdir
+from decimal import *
 
-def get_new_email(servername='imap.yandex.ru'):
+def get_new_email(price, servername='imap.yandex.ru'):
     subject = 'Your SSL Certificate'
     mail = imaplib.IMAP4_SSL(servername)
     mail.login(ADDR_FROM, PASSWORD_FOR_EMAIL)
     mail.list()
     mail.select('INBOX')
-    (status, data) = mail.search(None, 'UNSEEN')
+    request_price = Decimal(int(price))
+    BODY = f'UNSEEN BODY "{request_price}"'
+    (status, data) = mail.search(None, f'{BODY}')
+    date_message = datetime.strftime(datetime.now(), "%y_%m_%d-%H-%M-%S")
     money = 0
 
     if data != [b'']:
@@ -43,12 +47,11 @@ def get_new_email(servername='imap.yandex.ru'):
                             mkdir(f"message/")
                         except:
                             pass
-                        file_name = "message/email_" + str(num) + ".txt"
+                        file_name = "message/" + f"{date_message}.txt"
                         output_file = open(file_name, 'w', encoding='utf-8')
                         output_file.write("From: %s\nTo: %s\nDate: %s\nSubject: %s\n\nBody: \n\n%s" % (
                             email_from, email_to, local_message_date, subject, body.decode('utf-8')))
                         output_file.close()
-                        
                         try:
                             with io.open(file_name, mode="r", encoding="utf-8") as f_obj:
                                 contents = f_obj.read()
@@ -60,7 +63,6 @@ def get_new_email(servername='imap.yandex.ru'):
                                         money = words[i]
                                         money = money[6:]
                                 return money
-                                
                         except:
                             return money
                     else:

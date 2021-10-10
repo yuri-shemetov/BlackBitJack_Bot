@@ -2,7 +2,7 @@ from aiogram import types
 from . app import dp, bot, db
 from . import messages
 from aiogram.dispatcher import FSMContext
-from . keybords import inline_new, inline_rate, inline_pay, inline_photo_ok
+from . keybords import inline_new, inline_rate, inline_pay, inline_photo_ok, inline_admin
 from . states import GoStates
 from datetime import datetime
 from . mail import get_new_email
@@ -10,6 +10,8 @@ from . my_yadisk import save_to_yadisk, save_to_yadisk_wallet
 from . wallet_balance import check_wallet
 from . transactions import execute_transaction
 from . cleaner import get_files_messages, get_files_photos, get_files_wallets, remove_old_files
+from . black_list import black_list
+from . my_local_settings import ADMIN
 from decimal import *
 import asyncio
 from os import mkdir
@@ -17,20 +19,38 @@ from os import mkdir
 # Start
 @dp.message_handler(commands=['start'], state='*')
 async def send_welcome(message: types.Message):
-    await message.reply(messages.WELCOME_MESSAGE, reply_markup=inline_new)
+    for i in black_list:
+        if message.from_user.id == int(i):                                                    
+            await message.reply(messages.BLACK_LIST)
+            break
+    if message.from_user.id == ADMIN:
+        await message.reply(messages.WELCOME_ADMIN, reply_markup=inline_admin)
+        await GoStates.setting.set()
+    if message.from_user.id != int(i) and message.from_user.id != ADMIN:
+        await message.reply(messages.WELCOME_MESSAGE, reply_markup=inline_new)
 
 # Cancel
 @dp.callback_query_handler(lambda c: c.data == 'cancel', state='*')
 async def button_click_call_back(callback_query: types.CallbackQuery):
-    await bot.answer_callback_query(callback_query.id)
-    await bot.send_message(callback_query.from_user.id, messages.CANCEL_MESSAGE, reply_markup=inline_new)
+    for i in black_list:
+        if callback_query.from_user.id == int(i):
+            await bot.send_message(callback_query.from_user.id, messages.BLACK_LIST)
+            break
+    if callback_query.from_user.id != int(i):
+        await bot.answer_callback_query(callback_query.id)
+        await bot.send_message(callback_query.from_user.id, messages.CANCEL_MESSAGE, reply_markup=inline_new)
 
 # New application
 @dp.callback_query_handler(lambda c: c.data == 'new', state='*') 
 async def button_click_call_back(callback_query: types.CallbackQuery):
-    await GoStates.go.set()
-    await bot.answer_callback_query(callback_query.id)
-    await bot.send_message(callback_query.from_user.id, messages.CHOISE_RATE_MESSAGE, reply_markup=inline_rate)
+    for i in black_list:
+        if callback_query.from_user.id == int(i):
+            await bot.send_message(callback_query.from_user.id, messages.BLACK_LIST)
+            break
+    if callback_query.from_user.id != int(i):
+        await GoStates.go.set()
+        await bot.answer_callback_query(callback_query.id)
+        await bot.send_message(callback_query.from_user.id, messages.CHOISE_RATE_MESSAGE, reply_markup=inline_rate)
 
 # List commands for payment
 @dp.callback_query_handler(lambda c: c.data == 'OK', state=GoStates.pay)
@@ -130,7 +150,7 @@ async def process_message(message: types.Message, state: FSMContext):
         time_wait = 0
         while time_wait != 24:  #<--- 5*24=120 seconds or 2 minuts
             # check mail and get a new payment message
-            money = get_new_email()
+            money = get_new_email(price=price)
             #print(money)
             if Decimal(money) == Decimal(price):
                 # transaction

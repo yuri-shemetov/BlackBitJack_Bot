@@ -1,16 +1,15 @@
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from . app import dp, bot, db
-from . keybords import inline_answer
+from . keybords import inline_answer, inline_new
 from . states import GoStates
 from . currency_byn import currency_rate
 from decimal import *
 from datetime import datetime
 from . import messages
 from . transactions import get_balance_bitcoins
-from . keybords import inline_new
 from . import currency_usd
-from . my_local_settings import FEES
+from . open_settings import FEES
 
 @dp.callback_query_handler(lambda c: c.data == 'byn', state=GoStates.go)
 async def button_click_call_back(callback_query: types.CallbackQuery, state: FSMContext):
@@ -27,7 +26,7 @@ async def process_message(message: types.Message, state: FSMContext):
             async with state.proxy() as data:
                 data['text'] = message.text
                 user_message = data['text']
-            if Decimal(user_message) >= 50 and Decimal(user_message) <= 1500:
+            if Decimal(int(user_message)) >= 50 and Decimal(int(user_message)) <= 1500:
                 # дальше обрабатываем сообщение, ведем рассчеты и выдаем ответ.
                 balance = get_balance_bitcoins()
 
@@ -66,11 +65,11 @@ async def process_message(message: types.Message, state: FSMContext):
                     await message.reply(messages.BALANCE_BYN_MESSAGE + f'Для перевода доступно {balance} BTC.', reply_markup=inline_new)
 
 
-            elif Decimal(user_message) > 1500:
+            elif Decimal(int(user_message)) > 1500:
                 await message.reply(f'Ваша сумма должна быть не более 1500 BYN: ')
             else:
                 await message.reply(f'Ваша сумма должна быть не менее 50 BYN: ')
         except:
-            await message.reply(f'Введите корректную сумму: ')
+            await message.reply(f'Введите корректную сумму(дробные числа не принимаем!): ')
     else:
         await message.reply(messages.SERVER_ERROR)

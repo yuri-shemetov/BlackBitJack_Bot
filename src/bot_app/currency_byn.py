@@ -2,7 +2,7 @@ import requests
 from django import template
 from . import currency_usd
 from decimal import *
-from . my_local_settings import CURRENCY_RATE_FOR_ONE_BITCON, PERCENT
+from . open_settings import CURRENCY_RATE_FOR_ONE_BITCON, PERCENT
 
 register = template.Library()
 

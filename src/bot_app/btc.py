@@ -10,7 +10,7 @@ from . import messages
 from . transactions import get_balance_bitcoins
 from . keybords import inline_new
 from . import currency_usd
-from . my_local_settings import FEES
+from . open_settings import FEES
 
 @dp.callback_query_handler(lambda c: c.data == 'btc', state=GoStates.go)
 async def button_click_call_back(callback_query: types.CallbackQuery, state: FSMContext):
@@ -27,7 +27,10 @@ async def process_message(message: types.Message, state: FSMContext):
             async with state.proxy() as data:
                 data['text'] = message.text
                 user_message = data['text']
-            if Decimal(user_message) > 0.000499 and Decimal(user_message) <= 0.01:
+            BTC_BYN = currency_rate()
+            MIN_BTC = round(Decimal((50-Decimal(FEES)-Decimal(0.5))/BTC_BYN), 5)
+            MAX_BTC = round(Decimal((1500-Decimal(FEES)-Decimal(0.5))/BTC_BYN), 5)
+            if Decimal(user_message) >= MIN_BTC and Decimal(user_message) <= MAX_BTC:
                 # дальше обрабатываем сообщение, ведем рассчеты и выдаем ответ.
                 balance = get_balance_bitcoins()
 
@@ -35,8 +38,6 @@ async def process_message(message: types.Message, state: FSMContext):
                 ONE_BIT = round(Decimal(3/BTC_USD), 8)
 
                 if (Decimal(user_message) + Decimal(ONE_BIT)) <= Decimal(balance):
-
-                    BTC_BYN = currency_rate()
                     money = round(Decimal(user_message)*Decimal(BTC_BYN) + Decimal(FEES) + Decimal(0.5), 0)
                     answer_for_user = \
                         f'Стоимость указанного Вами количества биткоинов составит ' + str(money) + f' BYN. Отправка транзакции осуществляется с ПРИОРИТЕТОМ. Продолжить?'
@@ -65,10 +66,10 @@ async def process_message(message: types.Message, state: FSMContext):
                 else:
                     await message.reply(messages.BALANCE_BIT_MESSAGE + f'Для перевода доступно {balance} BTC.', reply_markup=inline_new)
 
-            elif Decimal(user_message) > 0.01:
-                await message.reply(f'Количество биткоинов должно быть не более 0.01 BTC: ')
+            elif Decimal(user_message) > MAX_BTC:
+                await message.reply(f'Количество биткоинов должно быть не более {MAX_BTC} BTC: ')
             else:
-                await message.reply(f'Количество биткоинов должно быть не менее 0.0005 BTC: ')
+                await message.reply(f'Количество биткоинов должно быть не менее {MIN_BTC} BTC: ')
         except:
            await message.reply(f'Введите корректную сумму (десятичную часть отделяйте только точкой!): ')
     else:

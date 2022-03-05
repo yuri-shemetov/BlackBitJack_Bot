@@ -16,3 +16,8 @@ file_percent = open('settings/percent.txt')
 now_percent = file_percent.read()
 file_percent.close()
 PERCENT = Decimal(now_percent)
+
+file_byn = open('settings/byn.txt')
+now_byn = file_byn.read()
+file_byn.close()
+BYN = Decimal(now_byn)

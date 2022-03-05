@@ -12,14 +12,21 @@ async def button_click_call_back(callback_query: types.CallbackQuery, state: FSM
     file_rate = open('settings/currency_rate.txt')
     now_rate = file_rate.read()
     file_rate.close()
+
     file_fees = open('settings/fees.txt')
     now_fees = file_fees.read()
     file_fees.close()
+
     file_percent = open('settings/percent.txt')
     now_percent = file_percent.read()
     file_percent.close()
+
+    file_byn = open('settings/byn.txt')
+    now_byn = file_byn.read()
+    file_byn.close()
+
     await bot.send_message(callback_query.from_user.id, 
-    f'Курс: {now_rate} BYN;\nКомиссия: {now_fees} BYN;\nПроцент: {now_percent} %;' + messages.SETTING, 
+    f'Курс: {now_rate} BYN;\nКомиссия: {now_fees} BYN;\nПроцент: {now_percent} %;\n1USD: {now_byn} BYN;' + messages.SETTING, 
     reply_markup=inline_setting)
     await state.finish()
     await GoStates.rate.set()
@@ -93,3 +100,27 @@ async def process_message(message: types.Message, state: FSMContext):
         await GoStates.setting.set()
     except:
         await message.reply('Введите корректно процент, десятичную дробь пишите только точкой!')
+
+# Upload Set_1USD=BYN
+@dp.callback_query_handler(lambda c: c.data == 'usd_byn', state=GoStates.rate) 
+async def button_click_call_back(callback_query: types.CallbackQuery, state: FSMContext):
+    await bot.answer_callback_query(callback_query.id)
+    await bot.send_message(callback_query.from_user.id, 'Введите стоимость доллара, BYN')
+    await state.finish()
+    await GoStates.usd_byn.set()
+
+# Successful Set_1USD=BYN
+@dp.message_handler(content_types=["text"], state=GoStates.usd_byn)
+async def process_message(message: types.Message, state: FSMContext):
+    try:
+        async with state.proxy() as data:
+            data['text'] = message.text
+            user_message = float(data['text'])
+        file = open("settings/byn.txt", "w+")
+        file.write(f'{user_message}')
+        file.close()
+        await message.reply('Курс доллара успешно изменен!', reply_markup=inline_admin)
+        await state.finish()
+        await GoStates.setting.set()
+    except:
+        await message.reply('Введите корректный курс, десятичную дробь пишите только точкой!')

@@ -16,3 +16,4 @@ class GoStates(StatesGroup):
     address = State()
     wait = State()
     rate = State()
+    usd_byn = State()

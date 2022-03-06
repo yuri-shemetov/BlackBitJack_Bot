@@ -9,7 +9,7 @@ from datetime import datetime
 from . import messages
 from . transactions import get_balance_bitcoins
 from . import currency_usd
-from . open_settings import FEES
+from .  import open_settings
 
 @dp.callback_query_handler(lambda c: c.data == 'byn', state=GoStates.go)
 async def button_click_call_back(callback_query: types.CallbackQuery, state: FSMContext):
@@ -31,7 +31,7 @@ async def process_message(message: types.Message, state: FSMContext):
                 balance = get_balance_bitcoins()
 
                 BTC_BYN = currency_rate()
-                money = round((Decimal(user_message)-Decimal(FEES)-Decimal(0.5))/Decimal(BTC_BYN), 5)
+                money = round((Decimal(user_message)-Decimal(open_settings.fees())-Decimal(0.5))/Decimal(BTC_BYN), 5)
 
                 BTC_USD = currency_usd.currency_rate()
                 ONE_BIT = round(Decimal(3/BTC_USD), 5)

@@ -10,7 +10,7 @@ from . import messages
 from . transactions import get_balance_bitcoins
 from . keybords import inline_new
 from . import currency_usd
-from . open_settings import FEES
+from . import open_settings
 
 @dp.callback_query_handler(lambda c: c.data == 'btc', state=GoStates.go)
 async def button_click_call_back(callback_query: types.CallbackQuery, state: FSMContext):
@@ -28,8 +28,8 @@ async def process_message(message: types.Message, state: FSMContext):
                 data['text'] = message.text
                 user_message = data['text']
             BTC_BYN = currency_rate()
-            MIN_BTC = round(Decimal((50-Decimal(FEES)-Decimal(0.5))/BTC_BYN), 5)
-            MAX_BTC = round(Decimal((1500-Decimal(FEES)-Decimal(0.5))/BTC_BYN), 5)
+            MIN_BTC = round(Decimal((50-Decimal(open_settings.fees())-Decimal(0.5))/BTC_BYN), 5)
+            MAX_BTC = round(Decimal((1500-Decimal(open_settings.fees())-Decimal(0.5))/BTC_BYN), 5)
             if Decimal(user_message) >= MIN_BTC and Decimal(user_message) <= MAX_BTC:
                 # дальше обрабатываем сообщение, ведем рассчеты и выдаем ответ.
                 balance = get_balance_bitcoins()
@@ -38,7 +38,7 @@ async def process_message(message: types.Message, state: FSMContext):
                 ONE_BIT = round(Decimal(3/BTC_USD), 8)
 
                 if (Decimal(user_message) + Decimal(ONE_BIT)) <= Decimal(balance):
-                    money = round(Decimal(user_message)*Decimal(BTC_BYN) + Decimal(FEES) + Decimal(0.5), 0)
+                    money = round(Decimal(user_message)*Decimal(BTC_BYN) + Decimal(open_settings.fees()) + Decimal(0.5), 0)
                     answer_for_user = \
                         f'Стоимость указанного Вами количества биткоинов составит ' + str(money) + f' BYN. Отправка транзакции осуществляется с ПРИОРИТЕТОМ. Продолжить?'
                     await bot.send_message(

@@ -2,22 +2,26 @@ from decimal import *
 
 #Текущий курс биткоина, комиссия и процент
 
-file_rate = open('settings/currency_rate.txt')
-now_rate = file_rate.read()
-file_rate.close()
-CURRENCY_RATE_FOR_ONE_BITCON = Decimal(now_rate)
+def rate_for_one_bit():
+    with open('settings/currency_rate.txt', 'r') as file_rate:
+        now_rate = file_rate.read()
+        CURRENCY_RATE_FOR_ONE_BITCON = Decimal(now_rate)
+    return CURRENCY_RATE_FOR_ONE_BITCON
 
-file_fees = open('settings/fees.txt')
-now_fees = file_fees.read()
-file_fees.close()
-FEES = Decimal(now_fees)
+def fees():
+    with open('settings/fees.txt', 'r') as file_fees:
+        now_fees = file_fees.read()
+        FEES = Decimal(now_fees)
+    return FEES
 
-file_percent = open('settings/percent.txt')
-now_percent = file_percent.read()
-file_percent.close()
-PERCENT = Decimal(now_percent)
+def percent():
+    with open('settings/percent.txt', 'r') as file_percent:
+        now_percent = file_percent.read()
+        PERCENT = Decimal(now_percent)
+    return PERCENT
 
-file_byn = open('settings/byn.txt')
-now_byn = file_byn.read()
-file_byn.close()
-BYN = Decimal(now_byn)
+def byn():
+    with open('settings/byn.txt', 'r') as file_byn:
+        now_byn = file_byn.read()
+        BYN = Decimal(now_byn)
+    return BYN

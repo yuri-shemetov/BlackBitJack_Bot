@@ -38,7 +38,7 @@ def get_new_email(price, servername='imap.yandex.ru'):
             email_to = str(email.header.make_header(email.header.decode_header(email_message['To'])))
             subject = str(email.header.make_header(email.header.decode_header(email_message['Subject'])))
 
-            if subject == '4.4556/Перевод (Поступление)':                             #<--- replace the text, A-bank
+            if subject == '4.6812/Перевод (Поступление)':                             #<--- replace the text, A-bank
                 # Body details
                 for part in email_message.walk():
                     if part.get_content_type() == "text/plain" or part.get_content_type() == "text/html":

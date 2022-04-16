@@ -29,7 +29,6 @@ def save_to_yadisk(id_user, path_jpg):
     with open(path_csv, 'a+') as file_csv:
         writer = csv.writer(file_csv)
         writer.writerows(myData)
-        file_csv.close()
 
     with open(path_csv, 'rb+') as file_csv:
         try:
@@ -37,11 +36,9 @@ def save_to_yadisk(id_user, path_jpg):
         except:
             pass    
         y.upload(file_csv, f"/{mounth}/00_MY_DATA_{mounth}.csv")
-        file_csv.close()
         
     with open(path_jpg, "rb") as photo:
         y.upload(photo, f"/{mounth}/00_PHOTO/{date}_id{id_user}.jpg")
-        photo.close()
 
 def save_to_yadisk_wallet(username, lastname, id_user, user_message):
     y = yadisk.YaDisk(yadisk_id, ya_secret, yadisk_token)
@@ -60,8 +57,6 @@ def save_to_yadisk_wallet(username, lastname, id_user, user_message):
     file_name = "wallet/" + f"{date}.txt"
     with open(file_name, 'w+') as message:
         message.write(f"{user_message}")
-        message.close()
 
     with open(file_name, 'rb') as message:
         y.upload(message, f"/{mounth}/00_WALLET/{date}_id{id_user}_[{username}_{lastname}].txt")
-        message.close()

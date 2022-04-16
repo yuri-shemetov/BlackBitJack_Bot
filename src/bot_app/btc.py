@@ -29,7 +29,7 @@ async def process_message(message: types.Message, state: FSMContext):
                 user_message = data['text']
             BTC_BYN = currency_rate()
             MIN_BTC = round(Decimal((50-Decimal(open_settings.fees())-Decimal(0.5))/BTC_BYN), 5)
-            MAX_BTC = round(Decimal((1500-Decimal(open_settings.fees())-Decimal(0.5))/BTC_BYN), 5)
+            MAX_BTC = round(Decimal((500-Decimal(open_settings.fees())-Decimal(0.5))/BTC_BYN), 5)
             if Decimal(user_message) >= MIN_BTC and Decimal(user_message) <= MAX_BTC:
                 # дальше обрабатываем сообщение, ведем рассчеты и выдаем ответ.
                 balance = get_balance_bitcoins()
@@ -67,9 +67,9 @@ async def process_message(message: types.Message, state: FSMContext):
                     await message.reply(messages.BALANCE_BIT_MESSAGE + f'Для перевода доступно {balance} BTC.', reply_markup=inline_new)
 
             elif Decimal(user_message) > MAX_BTC:
-                await message.reply(f'Количество биткоинов должно быть не более {MAX_BTC} BTC: ')
+                await message.reply(f'Количество биткоинов должно быть не более {MAX_BTC} BTC (Нужно больше BTC - обращайся к @BLACKBITJACK_LOCAL):')
             else:
-                await message.reply(f'Количество биткоинов должно быть не менее {MIN_BTC} BTC: ')
+                await message.reply(f'Количество биткоинов должно быть не менее {MIN_BTC} BTC. ')
         except:
            await message.reply(f'Введите корректную сумму (десятичную часть отделяйте только точкой!): ')
     else:

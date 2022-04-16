@@ -26,7 +26,7 @@ async def process_message(message: types.Message, state: FSMContext):
             async with state.proxy() as data:
                 data['text'] = message.text
                 user_message = data['text']
-            if Decimal(int(user_message)) >= 50 and Decimal(int(user_message)) <= 1500:
+            if Decimal(int(user_message)) >= 50 and Decimal(int(user_message)) <= 500:
                 # дальше обрабатываем сообщение, ведем рассчеты и выдаем ответ.
                 balance = get_balance_bitcoins()
 
@@ -65,8 +65,8 @@ async def process_message(message: types.Message, state: FSMContext):
                     await message.reply(messages.BALANCE_BYN_MESSAGE + f'Для перевода доступно {balance} BTC.', reply_markup=inline_new)
 
 
-            elif Decimal(int(user_message)) > 1500:
-                await message.reply(f'Ваша сумма должна быть не более 1500 BYN: ')
+            elif Decimal(int(user_message)) > 500:
+                await message.reply(f'Ваша сумма должна быть не более 500 BYN (Нужно больше - обращайся к @BLACKBITJACK_LOCAL): ')
             else:
                 await message.reply(f'Ваша сумма должна быть не менее 50 BYN: ')
         except:
